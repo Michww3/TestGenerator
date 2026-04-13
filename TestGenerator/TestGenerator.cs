@@ -2,8 +2,10 @@
 
 public static class TestGenerator
 {
-    public static void Generate(string className, string modelInterface, string modelClass, Param[] p)
+    public static string Generate(string className, string modelInterface, string modelClass, Param[] p)
     {
+        var sb = new System.Text.StringBuilder();
+
         int n = p.Length;
         int total = 1 << n;
 
@@ -11,71 +13,79 @@ public static class TestGenerator
         const string I2 = "        ";
 
         // --- 1. From model ---
-        Console.WriteLine("[Fact]");
-        Console.WriteLine("public void ProduceCorrectHashFromModel()");
-        Console.WriteLine("{");
+        sb.AppendLine("[Fact]");
+        sb.AppendLine("public void ProduceCorrectHashFromModel()");
+        sb.AppendLine("{");
 
         foreach (var param in p)
-            Console.WriteLine($"{I1}{param.Type} {param.Name} = {param.Init};");
+            sb.AppendLine($"{I1}{param.Type} {param.Name} = {param.Init};");
 
-        Console.WriteLine();
+        sb.AppendLine();
 
-        Console.WriteLine($"{I1}{modelInterface} model = new {modelClass}(");
+        sb.AppendLine($"{I1}{modelInterface} model = new {modelClass}(");
         for (int i = 0; i < n; i++)
         {
             string comma = i < n - 1 ? "," : "";
-            Console.WriteLine($"{I2}{p[i].Name}{comma}");
+            sb.AppendLine($"{I2}{p[i].Name}{comma}");
         }
-        Console.WriteLine($"{I1});");
-        Console.WriteLine();
+        sb.AppendLine($"{I1});");
+        sb.AppendLine();
 
-        Console.WriteLine($"{I1}{className} expected = new {className}(model);");
-        Console.WriteLine($"{I1}{className} actual = new {className}(model);");
-        Console.WriteLine();
-        Console.WriteLine($"{I1}Assert.True(expected.SequenceEqual(actual));");
-        Console.WriteLine("}");
-        Console.WriteLine();
+        sb.AppendLine($"{I1}{className} expected = new {className}(model);");
+        sb.AppendLine($"{I1}{className} actual = new {className}(model);");
+        sb.AppendLine();
+        sb.AppendLine($"{I1}Assert.True(expected.SequenceEqual(actual));");
+        sb.AppendLine("}");
+        sb.AppendLine();
 
         // --- 2. All combinations ---
         for (int mask = 0; mask < total; mask++)
         {
-            Console.WriteLine("[Fact]");
-            Console.WriteLine($"public void ProduceCorrectHashFrom{MaskName(mask, p)}()");
-            Console.WriteLine("{");
+            sb.AppendLine("[Fact]");
+            sb.AppendLine($"public void ProduceCorrectHashFrom{MaskName(mask, p)}()");
+            sb.AppendLine("{");
 
             foreach (var param in p)
-                Console.WriteLine($"{I1}{param.Type} {param.Name} = {param.Init};");
+                sb.AppendLine($"{I1}{param.Type} {param.Name} = {param.Init};");
 
-            Console.WriteLine();
+            sb.AppendLine();
 
-            Console.WriteLine($"{I1}{modelInterface} model = new {modelClass}(");
+            sb.AppendLine($"{I1}{modelInterface} model = new {modelClass}(");
             for (int i = 0; i < n; i++)
             {
                 string comma = i < n - 1 ? "," : "";
-                Console.WriteLine($"{I2}{p[i].Name}{comma}");
+                if(i <  n - 1)
+                    sb.AppendLine($"{I2}{p[i].Name}{comma}");
+                else
+                    sb.Append($"{I2}{p[i].Name}{comma}");
             }
-            Console.WriteLine($"{I1});");
+            sb.AppendLine($");");
 
-            Console.WriteLine();
+            sb.AppendLine();
 
-            Console.WriteLine($"{I1}{className} expected = new {className}(model);");
+            sb.AppendLine($"{I1}{className} expected = new {className}(model);");
 
-            Console.WriteLine($"{I1}{className} actual = new {className}(");
+            sb.AppendLine($"{I1}{className} actual = new {className}(");
             for (int i = 0; i < n; i++)
             {
                 bool isHash = (mask & (1 << i)) != 0;
                 string value = isHash ? p[i].HashExpr : p[i].Name;
 
                 string comma = i < n - 1 ? "," : "";
-                Console.WriteLine($"{I2}{value}{comma}");
+                if(i < n - 1)
+                    sb.AppendLine($"{I2}{value}{comma}");
+                else
+                    sb.Append($"{I2}{value}{comma}");
             }
-            Console.WriteLine($"{I1});");
+            sb.AppendLine($");");
 
-            Console.WriteLine();
-            Console.WriteLine($"{I1}Assert.True(expected.SequenceEqual(actual));");
-            Console.WriteLine("}");
-            Console.WriteLine();
+            sb.AppendLine();
+            sb.AppendLine($"{I1}Assert.True(expected.SequenceEqual(actual));");
+            sb.AppendLine("}");
+            sb.AppendLine();
         }
+
+        return sb.ToString();
     }
 
     static string MaskName(int mask, Param[] p)

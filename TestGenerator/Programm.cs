@@ -12,9 +12,9 @@ public static class Programm
         {
             new Param("IGuid","id","new Guid()","new DeterminedHash(id)"),
             new Param("IGuid","chartId","new Guid()","new DeterminedHash(chartId)"),
-            new Param("IString","legend","new RandomString()","new DeterminedHash(legend)"),
+            new Param("IString","legend","new RandomString()","new DeterminedHash((model as RelationalModel.Abstractions.IAxisRelationalModel).Legend)"),
         };
 
-        TestGenerator.Generate(className, modelInterface, modelClass, parameters);
+        Console.WriteLine(TestGenerator.Generate(className, modelInterface, modelClass, parameters));
     }
 }
