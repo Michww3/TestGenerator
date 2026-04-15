@@ -1,6 +1,6 @@
 ﻿namespace TestGenerator;
 
-public static class Programm
+public static class Program
 {
     static void Main()
     {
@@ -13,6 +13,8 @@ public static class Programm
             new Param("IGuid","id","new Guid()","new DeterminedHash(id)"),
             new Param("IGuid","chartId","new Guid()","new DeterminedHash(chartId)"),
             new Param("IString","legend","new RandomString()","new DeterminedHash((model as RelationalModel.Abstractions.IAxisRelationalModel).Legend)"),
+            new Param("IString","legend2","new RandomString()","new DeterminedHash((model as RelationalModel.Abstractions.IAxisRelationalModel).Legend2)"),
+            new Param("IString","legend3","new RandomString()","new DeterminedHash((model as RelationalModel.Abstractions.IAxisRelationalModel).Legend3)"),
         };
 
         Console.WriteLine(TestGenerator.Generate(className, modelInterface, modelClass, parameters));
