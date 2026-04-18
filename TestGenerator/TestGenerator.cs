@@ -14,7 +14,7 @@ public static class TestGenerator
         const string I1 = "    ";
         const string I2 = "        ";
 
-        // --- 1. From model ---
+        //Model
         sb.AppendLine("[Fact]");
         sb.AppendLine("public void ProduceCorrectHashFromModel()");
         sb.AppendLine("{");
@@ -40,7 +40,7 @@ public static class TestGenerator
         sb.AppendLine("}");
         sb.AppendLine();
 
-        // --- 2. All combinations ---
+        //Ctor combinations
         int[] masks = new int[total];
         for (int i = 0; i < total; i++)
             masks[i] = i;
